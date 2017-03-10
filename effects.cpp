@@ -1168,6 +1168,11 @@ QRect EffectsHandlerImpl::clientArea(clientAreaOption opt, const QPoint& p, int 
     return Workspace::self()->clientArea(opt, p, desktop);
 }
 
+QString EffectsHandlerImpl::screenName(int screen) const
+{
+    return screens()->name(screen);
+}
+
 QRect EffectsHandlerImpl::virtualScreenGeometry() const
 {
     return screens()->geometry();

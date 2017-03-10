@@ -156,6 +156,7 @@ public:
     QRect clientArea(clientAreaOption, int screen, int desktop) const override;
     QRect clientArea(clientAreaOption, const EffectWindow* c) const override;
     QRect clientArea(clientAreaOption, const QPoint& p, int desktop) const override;
+    QString screenName(int screen) const override;
     QSize virtualScreenSize() const override;
     QRect virtualScreenGeometry() const override;
     double animationTimeFactor() const override;

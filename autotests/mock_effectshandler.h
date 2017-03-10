@@ -56,6 +56,9 @@ public:
     QRect clientArea(KWin::clientAreaOption, int, int) const override {
         return QRect();
     }
+    QString screenName(int) const override {
+        return QString();
+    }
     void closeTabBox() override {}
     QString currentActivity() const override {
         return QString();
