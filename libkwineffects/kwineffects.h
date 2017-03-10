@@ -990,6 +990,7 @@ public:
     virtual QRect clientArea(clientAreaOption, int screen, int desktop) const = 0;
     virtual QRect clientArea(clientAreaOption, const EffectWindow* c) const = 0;
     virtual QRect clientArea(clientAreaOption, const QPoint& p, int desktop) const = 0;
+    virtual QString screenName(int screen) const = 0;
 
     /**
      * The bounding size of all screens combined. Overlapping areas
