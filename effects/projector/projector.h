@@ -29,6 +29,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace KWin
 {
 
+class GLTexture;
+
 /**
  * Transforms an output to correct for projector misalignment
  **/
@@ -44,15 +46,20 @@ public:
                             WindowPaintData& data) Q_DECL_OVERRIDE;
     virtual void prePaintScreen(ScreenPrePaintData &data, int time) Q_DECL_OVERRIDE;
     virtual void prePaintWindow(EffectWindow *w, WindowPrePaintData &data, int time) Q_DECL_OVERRIDE;
+    virtual void paintScreen(int mask, QRegion region, ScreenPaintData& data) Q_DECL_OVERRIDE;
     virtual bool isActive() const Q_DECL_OVERRIDE;
 
     static bool supported();
 
 private Q_SLOTS:
     void slotScreenGeometryChanged(const QSize &size);
+    void slotMouseChanged(const QPoint& pos, const QPoint& old,
+                          Qt::MouseButtons buttons, Qt::MouseButtons oldbuttons,
+                          Qt::KeyboardModifiers modifiers, Qt::KeyboardModifiers oldmodifiers);
 private:
     QPointF translatePoint(float x, float y, const QMatrix3x3 &mat/*const QRect &screenRect*/) const;
     static QMatrix3x3 calculateTransform(const QPolygonF &quad, const QRect &screenRect);
+    void recreateTexture();
 
     struct ScreenData {
         QString id;
@@ -63,6 +70,12 @@ private:
     };
 
     QVector<ScreenData> m_screenData;
+    QRegion m_transformedRegion;
+    QScopedPointer<GLTexture> m_cursorTexture;
+    QSize m_cursorSize;
+    QPoint m_cursorHotSpot;
+    QPoint m_cursorPos;
+    bool m_cursorVisible;
 };
 
 } // namespace
