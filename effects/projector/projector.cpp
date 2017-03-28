@@ -34,12 +34,42 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <xcb/render.h>
 #include <xcb/xfixes.h>
 
+#include "projectoreffectadaptor.h"
+
 namespace KWin
 {
+
+static Q_CONSTEXPR double maxDeformFactor = 0.4;
+
+static const QList<double> cornersMinValues = {
+    0.0, 0.0,
+    1.0 - maxDeformFactor, 0.0,
+    1.0 - maxDeformFactor, 1.0 - maxDeformFactor,
+    0.0, 1.0 - maxDeformFactor
+};
+
+static const QList<double> cornersMaxValues = {
+    maxDeformFactor, maxDeformFactor,
+    1.0, maxDeformFactor,
+    1.0, 1.0,
+    maxDeformFactor, 1.0
+};
+
+static const QList<double> cornersDefaulValues = {
+    0.0, 0.0,
+    1.0, 0.0,
+    1.0, 1.0,
+    0.0, 1.0
+};
 
 ProjectorEffect::ProjectorEffect()
     : m_cursorVisible(false)
 {
+    (void) new ProjectorEffectAdaptor(this);
+
+    QDBusConnection dbus = QDBusConnection::sessionBus();
+    dbus.registerObject(QStringLiteral("/Effects/Projector"), this);
+
 /*    m_corners[0] = QPointF(0.02f, 0.02f);
     m_corners[1] = QPointF(0.98f, 0.04f);
     m_corners[2] = QPointF(1.0f, 0.98f);
@@ -281,6 +311,52 @@ void ProjectorEffect::slotMouseChanged(const QPoint& pos, const QPoint& old,
         (cursorVisible ? xcb_xfixes_hide_cursor : xcb_xfixes_show_cursor)(xcbConnection(), x11RootWindow());
     }
     m_cursorVisible = cursorVisible;
+}
+
+bool ProjectorEffect::setScreenTranslation(const QString &screen, const QList<double> &corners)
+{
+    if (corners.length() != 8) {
+        qCWarning(KWINEFFECTS) << "Expected array of 8 corner coordinates, found" << corners.length() << "items";
+        return false;
+    }
+
+    auto screenDataIt = m_screenData.begin();
+    for (; screenDataIt != m_screenData.end() && screenDataIt->id != screen; screenDataIt++) {};
+
+    if (corners == cornersDefaulValues) {
+        if (screenDataIt != m_screenData.end()) {
+            m_screenData.erase(screenDataIt);
+        }
+    } else {
+        auto minIt = cornersMinValues.begin();
+        auto maxIt = cornersMaxValues.begin();
+        for (const float &val : corners) {
+            if (val < *minIt || val > *maxIt) {
+                qCWarning(KWINEFFECTS) << "Allowed values for corner coordinate "
+                        << minIt - cornersMinValues.begin() << " are between " << *minIt << " and "
+                        << *maxIt << " inclusive";
+                return false;
+            }
+            minIt++;
+            maxIt++;
+        }
+
+        if (screenDataIt == m_screenData.end()) {
+            ScreenData screenData;
+            m_screenData.prepend(screenData);
+            screenDataIt = m_screenData.begin();
+        }
+        screenDataIt->id = screen;
+        auto it = corners.begin();
+        screenDataIt->quad.clear();
+        for (int i = 0; i < 4; i++) {
+            screenDataIt->quad.append(QPointF(*it++, *it++));
+        }
+    }
+
+    slotScreenGeometryChanged(QSize());
+
+    return true;
 }
 
 } // namespace

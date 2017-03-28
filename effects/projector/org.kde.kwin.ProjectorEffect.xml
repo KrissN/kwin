@@ -1,0 +1,11 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN" "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+  <interface name="org.kde.kwin.ProjectorEffect">
+    <method name="setScreenTranslation">
+      <arg type="b" direction="out"/>
+      <arg name="screen" type="s" direction="in"/>
+      <arg name="corners" type="ad" direction="in"/>
+      <annotation name="org.qtproject.QtDBus.QtTypeName.In1" value="QList&lt;double&gt;"/>
+    </method>
+  </interface>
+</node>
