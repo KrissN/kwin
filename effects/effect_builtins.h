@@ -56,6 +56,7 @@ enum class BuiltInEffect
     MouseClick,
     MouseMark,
     PresentWindows,
+    Projector,
     Resize,
     ScreenEdge,
     ScreenShot,

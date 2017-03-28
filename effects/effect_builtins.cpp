@@ -56,6 +56,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "magnifier/magnifier.h"
 #include "mouseclick/mouseclick.h"
 #include "mousemark/mousemark.h"
+#include "projector/projector.h"
 #include "sheet/sheet.h"
 #include "snaphelper/snaphelper.h"
 #include "startupfeedback/startupfeedback.h"
@@ -428,6 +429,21 @@ EFFECT_FALLBACK
 #endif
 EFFECT_FALLBACK
     }, {
+        QStringLiteral("projector"),
+        i18ndc("kwin_effects", "Name of a KWin Effect", "Projector Correction"),
+        i18ndc("kwin_effects", "Comment describing the KWin Effect", "Apply projector correction for given screen"),
+        QStringLiteral("Window Management"),
+        QString(),
+        QUrl(),
+        true,
+        false,
+#ifdef EFFECT_BUILTINS
+        &createHelper<ProjectorEffect>,
+        nullptr,
+        nullptr
+#endif
+EFFECT_FALLBACK
+   }, {
         QStringLiteral("resize"),
         i18ndc("kwin_effects", "Name of a KWin Effect", "Resize Window"),
         i18ndc("kwin_effects", "Comment describing the KWin Effect", "Resizes windows with a fast texture scale instead of updating contents"),
