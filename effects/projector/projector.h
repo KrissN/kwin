@@ -38,6 +38,7 @@ class ProjectorEffect
     : public Effect
 {
     Q_OBJECT
+    Q_CLASSINFO("D-Bus Interface", "org.kde.kwin.ProjectorEffect")
 public:
     ProjectorEffect();
     ~ProjectorEffect();
@@ -50,6 +51,9 @@ public:
     virtual bool isActive() const Q_DECL_OVERRIDE;
 
     static bool supported();
+
+public Q_SLOTS:
+    bool setScreenTranslation(const QString &screen, const QList<double> &corners);
 
 private Q_SLOTS:
     void slotScreenGeometryChanged(const QSize &size);
